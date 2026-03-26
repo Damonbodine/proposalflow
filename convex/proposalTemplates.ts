@@ -18,7 +18,13 @@ export const list = query({
     includeInactive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return [];
     let templates;
     if (args.category !== undefined) {
       templates = await ctx.db
@@ -38,9 +44,14 @@ export const list = query({
 export const get = query({
   args: { templateId: v.id("proposalTemplates") },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return null;
     const template = await ctx.db.get(args.templateId);
-    if (!template) throw new Error("The requested proposal template was not found.");
     return template;
   },
 });

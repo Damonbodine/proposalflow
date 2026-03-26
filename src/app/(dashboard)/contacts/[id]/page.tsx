@@ -1,9 +1,8 @@
 "use client";
 
 import { use } from "react";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { ContactDetailView } from "@/components/contact-detail-view";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Id } from "@convex/_generated/dataModel";
 
 export default function ContactDetailPage({
@@ -16,11 +15,12 @@ export default function ContactDetailPage({
 
   return (
     <div className="space-y-6">
-      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-        <Link href="/contacts" className="hover:text-foreground">Contacts</Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground">Details</span>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { label: "Contacts", href: "/contacts" },
+          { label: "Details" },
+        ]}
+      />
       <ContactDetailView contactId={contactId} />
     </div>
   );

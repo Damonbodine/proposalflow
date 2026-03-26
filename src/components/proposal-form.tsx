@@ -13,6 +13,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { RichTextEditor } from "@/components/rich-text-editor";
+import { toast } from "sonner";
 
 interface ProposalFormProps {
   proposalId?: Id<"proposals">;
@@ -30,6 +32,7 @@ export function ProposalForm({ proposalId, preselectedContactId }: ProposalFormP
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contactId, setContactId] = useState<string>(preselectedContactId ?? existingProposal?.contactId ?? "");
   const [templateId, setTemplateId] = useState<string>("");
+  const [content, setContent] = useState<string>(existingProposal?.content ?? "");
 
   const isEdit = !!proposalId;
 
@@ -56,16 +59,18 @@ export function ProposalForm({ proposalId, preselectedContactId }: ProposalFormP
       const data = {
         title: fd.get("title") as string,
         contactId: contactId as Id<"contacts">,
-        content: (fd.get("content") as string) || "",
+        content: content || "",
         summary: (fd.get("summary") as string) || undefined,
         validUntil: fd.get("validUntil") ? new Date(fd.get("validUntil") as string).getTime() : undefined,
       };
 
       if (isEdit && proposalId) {
         await updateProposal({ proposalId, ...data });
+        toast.success("Proposal updated");
         router.push(`/proposals/${proposalId}`);
       } else {
         const id = await createProposal(data);
+        toast.success("Proposal created");
         router.push(`/proposals/${id}`);
       }
     } finally {
@@ -148,7 +153,12 @@ export function ProposalForm({ proposalId, preselectedContactId }: ProposalFormP
 
             <div className="space-y-2">
               <Label htmlFor="content">Content</Label>
-              <Textarea id="content" name="content" rows={8} defaultValue={existingProposal?.content ?? ""} />
+              <RichTextEditor
+                id="content"
+                value={content}
+                onChange={setContent}
+                placeholder="Write your proposal content here... Use **bold** and *italic* for formatting."
+              />
             </div>
 
             <div className="space-y-2">

@@ -9,9 +9,9 @@ export const seed = internalMutation({
 
     // ── Users ──────────────────────────────────────────────
     const adminId = await ctx.db.insert('users', {
-      clerkId: 'clerk_admin_001',
-      name: 'Sarah Chen',
-      email: 'sarah.chen@proposalflow.io',
+      clerkId: 'user_3BKO1mVZeYBph4mcp8lzDMKS7Tq',
+      name: 'Damon Bodine',
+      email: 'damonbodine@gmail.com',
       phone: '+15125551001',
       role: 'Admin' as const,
       companyName: 'ProposalFlow Inc.',
@@ -21,9 +21,9 @@ export const seed = internalMutation({
     });
 
     const ownerId = await ctx.db.insert('users', {
-      clerkId: 'clerk_owner_001',
-      name: 'Marcus Rivera',
-      email: 'marcus@riverapartners.com',
+      clerkId: 'user_3BRH9XIJ7LuaV1Hte9MqzawDxLQ',
+      name: 'Sarah Chen',
+      email: 'sarah@proposalflow.dev',
       phone: '+15125552010',
       role: 'BusinessOwner' as const,
       companyName: 'Rivera Partners LLC',
@@ -33,9 +33,9 @@ export const seed = internalMutation({
     });
 
     const sales1Id = await ctx.db.insert('users', {
-      clerkId: 'clerk_sales_001',
-      name: 'Jessica Park',
-      email: 'jessica.park@riverapartners.com',
+      clerkId: 'user_3BRH9ahcbN9bP8zvJvJBJm0mgoT',
+      name: 'Mike Handler',
+      email: 'mike@proposalflow.dev',
       phone: '+15125553020',
       role: 'SalesRep' as const,
       companyName: 'Rivera Partners LLC',

@@ -15,7 +15,13 @@ async function getAuthenticatedUser(ctx: any) {
 export const getStats = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return null;
     let contacts;
     let proposals;
     let meetings;
@@ -68,7 +74,13 @@ export const getRecentActivity = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return [];
     const takeLimit = args.limit ?? 20;
     let activities;
     if (user.role === "SalesRep") {
@@ -90,7 +102,13 @@ export const getRecentActivity = query({
 export const getPipelineBreakdown = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return [];
     let contacts;
     if (user.role === "SalesRep") {
       contacts = await ctx.db

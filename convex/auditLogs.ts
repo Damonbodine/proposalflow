@@ -10,13 +10,13 @@ export const list = query({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Authentication required. Please sign in to continue.");
+    if (!identity) return [];
     const currentUser = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
       .unique();
     if (!currentUser || currentUser.role !== "Admin") {
-      throw new Error("You do not have permission to perform this action.");
+      return [];
     }
     const takeLimit = args.limit ?? 100;
     let logs;

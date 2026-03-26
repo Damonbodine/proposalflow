@@ -1,9 +1,8 @@
 "use client";
 
 import { use } from "react";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { TemplateForm } from "@/components/template-form";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Id } from "@convex/_generated/dataModel";
 
 export default function EditTemplatePage({
@@ -16,11 +15,12 @@ export default function EditTemplatePage({
 
   return (
     <div className="space-y-6">
-      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-        <Link href="/templates" className="hover:text-foreground">Templates</Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground">Edit Template</span>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { label: "Templates", href: "/templates" },
+          { label: "Edit Template" },
+        ]}
+      />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Edit Template</h1>
         <p className="text-muted-foreground">Update template details and default line items</p>

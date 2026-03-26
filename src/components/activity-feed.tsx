@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Phone, Mail, FileText, Calendar, MessageSquare, Eye, Check, X, ArrowRightLeft,
 } from "lucide-react";
+import { timeAgo } from "@/lib/format";
 
 const activityIcons: Record<string, React.ElementType> = {
   Note: MessageSquare,
@@ -40,7 +41,13 @@ export function ActivityFeed() {
       </CardHeader>
       <CardContent>
         {activities.length === 0 ? (
-          <p className="text-center text-muted-foreground py-4">No recent activity</p>
+          <div className="flex flex-col items-center justify-center py-8">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
+              <MessageSquare className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground font-medium">No recent activity</p>
+            <p className="text-sm text-muted-foreground/70 mt-1">Activities will show up as you work with contacts and proposals</p>
+          </div>
         ) : (
           <div className="space-y-4">
             {activities.map((activity) => {
@@ -58,8 +65,8 @@ export function ActivityFeed() {
                     {activity.details && (
                       <p className="text-sm text-muted-foreground truncate mt-0.5">{activity.details}</p>
                     )}
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(activity.createdAt).toLocaleString()}
+                    <p className="text-xs text-muted-foreground mt-1" title={new Date(activity.createdAt).toLocaleString()}>
+                      {timeAgo(activity.createdAt)}
                     </p>
                   </div>
                 </div>

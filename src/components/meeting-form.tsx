@@ -13,6 +13,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 const meetingTypes = ["Discovery", "Presentation", "FollowUp", "Negotiation", "Closing", "Other"] as const;
 
@@ -42,6 +43,7 @@ export function MeetingForm({ preselectedContactId }: MeetingFormProps) {
         location: (fd.get("location") as string) || undefined,
         meetingType: meetingType as "Discovery" | "Presentation" | "FollowUp" | "Negotiation" | "Closing" | "Other",
       });
+      toast.success("Meeting scheduled");
       router.push("/meetings");
     } finally {
       setIsSubmitting(false);

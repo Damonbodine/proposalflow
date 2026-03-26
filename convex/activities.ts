@@ -18,11 +18,17 @@ export const listByContact = query({
     type: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return [];
     const contact = await ctx.db.get(args.contactId);
-    if (!contact) throw new Error("The requested contact was not found.");
+    if (!contact) return [];
     if (user.role === "SalesRep" && contact.ownerId !== user._id) {
-      throw new Error("You do not have permission to perform this action.");
+      return [];
     }
     let activities = await ctx.db
       .query("activities")

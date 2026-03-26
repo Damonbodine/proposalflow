@@ -20,7 +20,13 @@ export const list = query({
     search: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return [];
     let contacts;
     if (user.role === "SalesRep") {
       if (args.status !== undefined) {
@@ -71,11 +77,17 @@ export const list = query({
 export const get = query({
   args: { contactId: v.id("contacts") },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return null;
     const contact = await ctx.db.get(args.contactId);
-    if (!contact) throw new Error("The requested contact was not found.");
+    if (!contact) return null;
     if (user.role === "SalesRep" && contact.ownerId !== user._id) {
-      throw new Error("You do not have permission to perform this action.");
+      return null;
     }
     return contact;
   },
@@ -235,6 +247,22 @@ export const remove = mutation({
       await ctx.db.delete(reminder._id);
     }
     await ctx.db.delete(args.contactId);
+  },
+});
+
+export const search = query({
+  args: { query: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const all = await ctx.db.query("contacts").collect();
+    const q = args.query.toLowerCase();
+    return all.filter(c =>
+      c.firstName.toLowerCase().includes(q) ||
+      c.lastName.toLowerCase().includes(q) ||
+      (c.company ?? "").toLowerCase().includes(q) ||
+      (c.email ?? "").toLowerCase().includes(q)
+    ).slice(0, 10);
   },
 });
 

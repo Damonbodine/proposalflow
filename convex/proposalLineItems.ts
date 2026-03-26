@@ -15,11 +15,17 @@ async function getAuthenticatedUser(ctx: any) {
 export const listByProposal = query({
   args: { proposalId: v.id("proposals") },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return [];
     const proposal = await ctx.db.get(args.proposalId);
-    if (!proposal) throw new Error("The requested proposal was not found.");
+    if (!proposal) return [];
     if (user.role === "SalesRep" && proposal.createdById !== user._id) {
-      throw new Error("You do not have permission to perform this action.");
+      return [];
     }
     const items = await ctx.db
       .query("proposalLineItems")

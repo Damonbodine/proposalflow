@@ -21,7 +21,13 @@ export const list = query({
     startBefore: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return [];
     let meetings;
     if (user.role === "SalesRep") {
       if (args.status !== undefined) {
@@ -68,11 +74,17 @@ export const list = query({
 export const get = query({
   args: { meetingId: v.id("meetings") },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return null;
     const meeting = await ctx.db.get(args.meetingId);
-    if (!meeting) throw new Error("The requested meeting was not found.");
+    if (!meeting) return null;
     if (user.role === "SalesRep" && meeting.organizerId !== user._id) {
-      throw new Error("You do not have permission to perform this action.");
+      return null;
     }
     return meeting;
   },

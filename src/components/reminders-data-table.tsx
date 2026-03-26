@@ -8,7 +8,10 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Check, X, AlarmClock } from "lucide-react";
+import { Clock, Check, X, AlarmClock, Bell } from "lucide-react";
+import { timeAgo } from "@/lib/format";
+import { Card, CardContent } from "@/components/ui/card";
+import { TableSkeleton } from "@/components/table-skeleton";
 
 const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   Pending: "default",
@@ -23,9 +26,19 @@ export function RemindersDataTable() {
   const dismiss = useMutation(api.reminders.dismiss);
   const complete = useMutation(api.reminders.complete);
 
-  if (!reminders) return <div className="p-8 text-center text-muted-foreground">Loading reminders...</div>;
+  if (reminders === undefined) return <TableSkeleton rows={3} cols={4} />;
   if (reminders.length === 0)
-    return <div className="p-8 text-center text-muted-foreground">No reminders</div>;
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
+            <Bell className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <p className="text-muted-foreground font-medium">No reminders yet</p>
+          <p className="text-sm text-muted-foreground/70 mt-1">Reminders will appear here when you create them</p>
+        </CardContent>
+      </Card>
+    );
 
   const isOverdue = (dueAt: number) => dueAt < Date.now();
 
@@ -49,7 +62,7 @@ export function RemindersDataTable() {
               </div>
             </TableCell>
             <TableCell className="text-muted-foreground">
-              {new Date(reminder.dueAt).toLocaleString()}
+              <span title={new Date(reminder.dueAt).toLocaleString()}>{timeAgo(reminder.dueAt)}</span>
               {isOverdue(reminder.dueAt) && reminder.status === "Pending" && (
                 <span className="text-destructive ml-2 text-xs font-medium">Overdue</span>
               )}

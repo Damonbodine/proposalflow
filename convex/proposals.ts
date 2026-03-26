@@ -19,7 +19,13 @@ export const list = query({
     createdById: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return [];
     let proposals;
     if (user.role === "SalesRep") {
       if (args.status !== undefined) {
@@ -62,13 +68,33 @@ export const list = query({
 export const get = query({
   args: { proposalId: v.id("proposals") },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return null;
     const proposal = await ctx.db.get(args.proposalId);
-    if (!proposal) throw new Error("The requested proposal was not found.");
+    if (!proposal) return null;
     if (user.role === "SalesRep" && proposal.createdById !== user._id) {
-      throw new Error("You do not have permission to perform this action.");
+      return null;
     }
     return proposal;
+  },
+});
+
+export const search = query({
+  args: { query: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const all = await ctx.db.query("proposals").collect();
+    const q = args.query.toLowerCase();
+    return all.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      (p.summary ?? "").toLowerCase().includes(q)
+    ).slice(0, 10);
   },
 });
 

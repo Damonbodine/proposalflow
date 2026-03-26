@@ -15,7 +15,13 @@ async function getAuthenticatedUser(ctx: any) {
 export const getMine = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getAuthenticatedUser(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return null;
     const settings = await ctx.db
       .query("userSettings")
       .withIndex("by_userId", (q: any) => q.eq("userId", user._id))

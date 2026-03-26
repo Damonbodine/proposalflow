@@ -9,7 +9,7 @@ export const getCurrentUser = query({
     const user = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-      .unique();
+      .first();
     return user;
   },
 });
@@ -18,9 +18,8 @@ export const getUser = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Authentication required. Please sign in to continue.");
+    if (!identity) return null;
     const user = await ctx.db.get(args.userId);
-    if (!user) throw new Error("The requested user was not found.");
     return user;
   },
 });
@@ -32,13 +31,13 @@ export const list = query({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Authentication required. Please sign in to continue.");
+    if (!identity) return [];
     const currentUser = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-      .unique();
+      .first();
     if (!currentUser || currentUser.role !== "Admin") {
-      throw new Error("You do not have permission to perform this action.");
+      return [];
     }
     let users;
     if (args.role !== undefined) {
@@ -70,7 +69,7 @@ export const updateProfile = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-      .unique();
+      .first();
     if (!user) throw new Error("The requested user was not found.");
     const { ...fields } = args;
     const updates = Object.fromEntries(
@@ -93,7 +92,7 @@ export const createFromClerk = mutation({
     const existing = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
-      .unique();
+      .first();
     if (existing) {
       await ctx.db.patch(existing._id, {
         name: args.name,

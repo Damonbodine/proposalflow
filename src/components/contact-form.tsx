@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 const sources = ["Manual", "Import", "Referral", "Website", "Meeting"] as const;
 const statuses = ["New", "Contacted", "Qualified", "ProposalSent", "Won", "Lost"] as const;
@@ -70,9 +71,11 @@ export function ContactForm({ contactId }: ContactFormProps) {
 
       if (isEdit && contactId) {
         await updateContact({ contactId, ...data });
+        toast.success("Contact updated");
         router.push(`/contacts/${contactId}`);
       } else {
         const id = await createContact(data);
+        toast.success("Contact created");
         router.push(`/contacts/${id}`);
       }
     } finally {

@@ -8,10 +8,10 @@ import { Id } from "@convex/_generated/dataModel";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 interface ProposalFormProps {
   preselectedContactId?: Id<"contacts">;
@@ -118,7 +118,12 @@ export function ProposalForm({ preselectedContactId, preselectedTemplateId }: Pr
       ) : (
         <div className="space-y-2">
           <Label htmlFor="content">Proposal Content *</Label>
-          <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Enter your proposal details here..." rows={10} />
+          <RichTextEditor
+            id="content"
+            value={content}
+            onChange={setContent}
+            placeholder="Enter your proposal details here... Use **bold** and *italic* for formatting."
+          />
         </div>
       )}
       <div className="flex justify-end gap-3">

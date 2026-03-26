@@ -1,10 +1,9 @@
 "use client";
 
 import { use } from "react";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { ProposalForm } from "@/components/proposal-form";
 import { LineItemsEditor } from "@/components/line-items-editor";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Id } from "@convex/_generated/dataModel";
 
 export default function EditProposalPage({
@@ -17,13 +16,13 @@ export default function EditProposalPage({
 
   return (
     <div className="space-y-6">
-      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-        <Link href="/proposals" className="hover:text-foreground">Proposals</Link>
-        <ChevronRight className="h-4 w-4" />
-        <Link href={`/proposals/${id}`} className="hover:text-foreground">Details</Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground">Edit</span>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { label: "Proposals", href: "/proposals" },
+          { label: "Details", href: `/proposals/${id}` },
+          { label: "Edit" },
+        ]}
+      />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Edit Proposal</h1>
         <p className="text-muted-foreground">Update proposal details and line items</p>
