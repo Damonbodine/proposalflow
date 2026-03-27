@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { AiGenerateButton } from "@/components/ai-generate-button";
 
 interface MeetingFormProps {
   mode: "create" | "edit";
@@ -51,6 +52,7 @@ export function MeetingForm({ mode, initialData, preselectedContactId, preselect
   );
   const [location, setLocation] = useState(initialData?.location ?? "");
   const [meetingType, setMeetingType] = useState(initialData?.meetingType ?? "InPerson");
+  const [outcome, setOutcome] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +82,7 @@ export function MeetingForm({ mode, initialData, preselectedContactId, preselect
         await createMeeting(data);
         toast({ title: "Meeting scheduled", description: `"${title}" has been created.` });
       } else if (initialData) {
-        await updateMeeting({ meetingId: initialData._id, ...data });
+        await updateMeeting({ meetingId: initialData._id, ...data, ...(outcome && { outcome: outcome.trim() }) });
         toast({ title: "Meeting updated", description: `"${title}" has been updated.` });
       }
       router.push("/meetings");
@@ -146,8 +148,38 @@ export function MeetingForm({ mode, initialData, preselectedContactId, preselect
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="description">Description</Label>
+          <AiGenerateButton
+            fieldName="meetingDescription"
+            context={{
+              title,
+              contact: contacts?.find((c) => c._id === contactId),
+              proposal: proposals?.find((p) => p._id === proposalId),
+              meetingType,
+              startTime,
+              location,
+            }}
+            onGenerated={(text) => setDescription(text)}
+          />
+        </div>
         <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Meeting agenda and notes..." rows={4} />
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="outcome">Outcome</Label>
+          <AiGenerateButton
+            fieldName="meetingOutcome"
+            context={{
+              title,
+              description,
+              contact: contacts?.find((c) => c._id === contactId),
+              meetingType,
+            }}
+            onGenerated={(text) => setOutcome(text)}
+          />
+        </div>
+        <Textarea id="outcome" value={outcome} onChange={(e) => setOutcome(e.target.value)} placeholder="Meeting outcome and action items..." rows={4} />
       </div>
       <div className="flex justify-end gap-3">
         <Button type="button" variant="outline" onClick={() => router.push("/meetings")} disabled={loading}>Cancel</Button>

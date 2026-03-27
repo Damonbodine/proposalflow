@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import { AiGenerateButton } from "@/components/ai-generate-button";
 
 interface LineItem {
   _id?: Id<"proposalLineItems">;
@@ -140,7 +141,14 @@ export function ProposalEditForm({ proposal }: ProposalEditFormProps) {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="summary">Summary</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="summary">Summary</Label>
+            <AiGenerateButton
+              fieldName="proposalSummary"
+              context={{ title, content, lineItems }}
+              onGenerated={(text) => setSummary(text)}
+            />
+          </div>
           <Input id="summary" value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Brief proposal summary" />
         </div>
         <div className="space-y-2">

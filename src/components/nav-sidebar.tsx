@@ -64,7 +64,7 @@ export function NavSidebar() {
           </div>
           <div className="flex flex-col">
             <span className="text-base font-bold text-sidebar-foreground tracking-tight">ProposalFlow</span>
-            <span className="text-[10px] text-sidebar-foreground/40 font-medium uppercase tracking-widest">Sales CRM</span>
+            <span className="text-[10px] text-sidebar-foreground/60 font-medium uppercase tracking-widest">Sales CRM</span>
           </div>
         </Link>
       </SidebarHeader>
@@ -87,7 +87,7 @@ export function NavSidebar() {
                   className={
                     isActive
                       ? "bg-blue-600/10 text-blue-600 border-l-2 border-blue-600 rounded-l-none font-medium dark:bg-blue-500/15 dark:text-blue-400 dark:border-blue-400"
-                      : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 border-l-2 border-transparent rounded-l-none"
+                      : "text-sidebar-foreground/90 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 border-l-2 border-transparent rounded-l-none"
                   }
                 >
                   <Icon className={`h-4 w-4 ${isActive ? "text-blue-600 dark:text-blue-400" : ""}`} />

@@ -9,6 +9,7 @@
  */
 
 import type * as activities from "../activities.js";
+import type * as ai from "../ai.js";
 import type * as auditLogs from "../auditLogs.js";
 import type * as contacts from "../contacts.js";
 import type * as crons from "../crons.js";
@@ -32,6 +33,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   activities: typeof activities;
+  ai: typeof ai;
   auditLogs: typeof auditLogs;
   contacts: typeof contacts;
   crons: typeof crons;

@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { AiGenerateButton } from "@/components/ai-generate-button";
 
 interface ContactFormProps {
   mode: "create" | "edit";
@@ -170,7 +171,25 @@ export function ContactForm({ mode, initialData }: ContactFormProps) {
         <Input id="tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="vip, enterprise, follow-up" />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="notes">Notes</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="notes">Notes</Label>
+          <AiGenerateButton
+            fieldName="contactNotes"
+            context={{
+              firstName,
+              lastName,
+              company,
+              jobTitle,
+              industry,
+              email,
+              phone,
+              status,
+              source,
+              estimatedValue,
+            }}
+            onGenerated={(text) => setNotes(text)}
+          />
+        </div>
         <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add notes about this contact..." rows={4} />
       </div>
       <div className="flex justify-end gap-3">

@@ -9,9 +9,9 @@ export const seed = internalMutation({
 
     // ── Users ──────────────────────────────────────────────
     const adminId = await ctx.db.insert('users', {
-      clerkId: 'user_3BKO1mVZeYBph4mcp8lzDMKS7Tq',
-      name: 'Damon Bodine',
-      email: 'damonbodine@gmail.com',
+      clerkId: 'user_3BV4YzajQ96nGS3hlBDld9VcLa8',
+      name: 'Demo User',
+      email: 'demo@factory512.dev',
       phone: '+15125551001',
       role: 'Admin' as const,
       companyName: 'ProposalFlow Inc.',

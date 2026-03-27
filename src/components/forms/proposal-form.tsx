@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { AiGenerateButton } from "@/components/ai-generate-button";
 
 interface ProposalFormProps {
   preselectedContactId?: Id<"contacts">;
@@ -117,7 +118,19 @@ export function ProposalForm({ preselectedContactId, preselectedTemplateId }: Pr
         </div>
       ) : (
         <div className="space-y-2">
-          <Label htmlFor="content">Proposal Content *</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="content">Proposal Content *</Label>
+            <AiGenerateButton
+              fieldName="proposalContent"
+              context={{
+                contact: contacts?.find((c) => c._id === contactId),
+                template: templates?.find((t) => t._id === templateId),
+                title,
+              }}
+              onGenerated={(text) => setContent(text)}
+              disabled={!contactId}
+            />
+          </div>
           <RichTextEditor
             id="content"
             value={content}

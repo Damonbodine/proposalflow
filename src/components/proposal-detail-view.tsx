@@ -19,10 +19,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Send, FileText, DollarSign, Calendar, Download, Clock, History } from "lucide-react";
+import { Pencil, Send, FileText, DollarSign, Calendar, Download, Clock, History, Sparkles, Loader2 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { ProposalStatusStepper } from "@/components/proposal-status-stepper";
 import { toast } from "sonner";
+import { useAction } from "convex/react";
 
 interface ProposalDetailViewProps {
   proposalId: Id<"proposals">;
@@ -32,9 +33,12 @@ export function ProposalDetailView({ proposalId }: ProposalDetailViewProps) {
   const proposal = useQuery(api.proposals.get, { proposalId });
   const lineItems = useQuery(api.proposalLineItems.listByProposal, { proposalId });
   const sendProposal = useMutation(api.proposals.send);
+  const updateProposal = useMutation(api.proposals.update);
+  const generateAi = useAction(api.ai.generate);
   const router = useRouter();
   const [sendConfirmOpen, setSendConfirmOpen] = useState(false);
   const [sending, setSending] = useState(false);
+  const [generatingSummary, setGeneratingSummary] = useState(false);
 
   if (!proposal) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
 
@@ -59,6 +63,27 @@ export function ProposalDetailView({ proposalId }: ProposalDetailViewProps) {
     }
   };
 
+  const handleGenerateSummary = async () => {
+    setGeneratingSummary(true);
+    try {
+      const text = await generateAi({
+        fieldName: "proposalSummary",
+        context: {
+          title: proposal.title,
+          content: proposal.content,
+          totalAmount: proposal.totalAmount,
+          lineItems: lineItems ?? [],
+        },
+      });
+      await updateProposal({ proposalId, summary: text });
+      toast.success("Summary generated");
+    } catch {
+      toast.error("Failed to generate summary");
+    } finally {
+      setGeneratingSummary(false);
+    }
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -71,6 +96,15 @@ export function ProposalDetailView({ proposalId }: ProposalDetailViewProps) {
           {proposal.summary && <p className="text-muted-foreground mt-1">{proposal.summary}</p>}
         </div>
         <div className="flex items-center gap-3">
+          {(proposal.status === "Draft" || proposal.status === "Revised") && (
+            <Button variant="outline" size="sm" onClick={handleGenerateSummary} disabled={generatingSummary}>
+              {generatingSummary ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Generating...</>
+              ) : (
+                <><Sparkles className="mr-2 h-4 w-4" />Generate Summary</>
+              )}
+            </Button>
+          )}
           <Badge variant={statusColors[proposal.status] ?? "secondary"}>{proposal.status}</Badge>
           <Button variant="outline" onClick={handlePrint}>
             <Download className="mr-2 h-4 w-4" /> Download PDF
