@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 
 import { use } from "react";
 import { ProposalDetailView } from "@/components/proposal-detail-view";

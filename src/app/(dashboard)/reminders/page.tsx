@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 
 import { RemindersDataTable } from "@/components/reminders-data-table";
 

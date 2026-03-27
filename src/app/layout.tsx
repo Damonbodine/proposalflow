@@ -4,6 +4,8 @@ import "./globals.css";
 import { ConvexClientProvider } from "@/components/providers/convex-client-provider";
 import { Toaster } from "sonner";
 
+export const dynamic = 'force-dynamic';
+
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-body",
@@ -31,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${jakarta.variable} ${sora.variable} font-sans antialiased`}>
         <ConvexClientProvider>{children}</ConvexClientProvider>
         <Toaster richColors position="bottom-right" />
