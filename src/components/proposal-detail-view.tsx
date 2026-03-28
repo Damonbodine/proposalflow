@@ -24,6 +24,8 @@ import { formatCurrency } from "@/lib/format";
 import { ProposalStatusStepper } from "@/components/proposal-status-stepper";
 import { toast } from "sonner";
 import { useAction } from "convex/react";
+import { WinLossAnalysis } from "@/components/win-loss-analysis";
+import { FollowUpEmailDrafter } from "@/components/follow-up-email-drafter";
 
 interface ProposalDetailViewProps {
   proposalId: Id<"proposals">;
@@ -255,6 +257,27 @@ export function ProposalDetailView({ proposalId }: ProposalDetailViewProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* AI Win/Loss Analysis */}
+      {(proposal.status === "Accepted" || proposal.status === "Declined") && (
+        <WinLossAnalysis
+          proposalId={proposalId}
+          proposalTitle={proposal.title}
+          proposalContent={proposal.content}
+          proposalAmount={proposal.totalAmount}
+          proposalStatus={proposal.status}
+          contactId={proposal.contactId}
+        />
+      )}
+
+      {/* AI Follow-Up Email Drafter */}
+      <FollowUpEmailDrafter
+        proposalId={proposalId}
+        proposalTitle={proposal.title}
+        proposalStatus={proposal.status}
+        contactId={proposal.contactId}
+        sentAt={proposal.sentAt}
+      />
 
       {/* Timestamps */}
       <div className="flex items-center gap-6 text-xs text-muted-foreground print:hidden">

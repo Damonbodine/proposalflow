@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { format } from "date-fns";
 import { User, FileText, DollarSign, Building2 } from "lucide-react";
+import { MeetingNotesExtractor } from "@/components/meeting-notes-extractor";
 
 export default function MeetingDetailPage({
   params,
@@ -103,9 +104,13 @@ export default function MeetingDetailPage({
             <CardTitle>Outcome</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{meeting.outcome}</p>
+            <div className="whitespace-pre-wrap">{meeting.outcome}</div>
           </CardContent>
         </Card>
+      )}
+
+      {(meeting.status === "Scheduled" || meeting.status === "Completed") && (
+        <MeetingNotesExtractor meetingId={meetingId} meetingTitle={meeting.title} />
       )}
     </div>
   );

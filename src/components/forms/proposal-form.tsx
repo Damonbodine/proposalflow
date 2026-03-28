@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { AiGenerateButton } from "@/components/ai-generate-button";
+import { ProposalDraftGenerator } from "@/components/proposal-draft-generator";
 
 interface ProposalFormProps {
   preselectedContactId?: Id<"contacts">;
@@ -117,26 +118,35 @@ export function ProposalForm({ preselectedContactId, preselectedTemplateId }: Pr
           </Select>
         </div>
       ) : (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="content">Proposal Content *</Label>
-            <AiGenerateButton
-              fieldName="proposalContent"
-              context={{
-                contact: contacts?.find((c) => c._id === contactId),
-                template: templates?.find((t) => t._id === templateId),
-                title,
-              }}
+        <div className="space-y-4">
+          {contactId && (
+            <ProposalDraftGenerator
+              contactId={contactId}
+              proposalTitle={title}
               onGenerated={(text) => setContent(text)}
-              disabled={!contactId}
+            />
+          )}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="content">Proposal Content *</Label>
+              <AiGenerateButton
+                fieldName="proposalContent"
+                context={{
+                  contact: contacts?.find((c) => c._id === contactId),
+                  template: templates?.find((t) => t._id === templateId),
+                  title,
+                }}
+                onGenerated={(text) => setContent(text)}
+                disabled={!contactId}
+              />
+            </div>
+            <RichTextEditor
+              id="content"
+              value={content}
+              onChange={setContent}
+              placeholder="Enter your proposal details here... Use **bold** and *italic* for formatting."
             />
           </div>
-          <RichTextEditor
-            id="content"
-            value={content}
-            onChange={setContent}
-            placeholder="Enter your proposal details here... Use **bold** and *italic* for formatting."
-          />
         </div>
       )}
       <div className="flex justify-end gap-3">
