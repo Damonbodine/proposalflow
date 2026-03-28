@@ -125,13 +125,14 @@ export function ProposalsDataTable({ statusFilter }: ProposalsDataTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {proposals.map((proposal) => {
+              {proposals.map((proposal, index) => {
                 const urgency = getUrgency(proposal.validUntil);
                 const amount = proposal.totalAmount ?? 0;
                 const isHighValue = amount >= 10000;
                 return (
                   <TableRow
                     key={proposal._id}
+                    data-demo={index === 0 ? "primary-proposal-row" : undefined}
                     className="cursor-pointer group"
                     onClick={() =>
                       router.push(

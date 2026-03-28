@@ -216,7 +216,7 @@ export function ContactsDataTable({ statusFilter, sourceFilter, searchQuery }: C
               </TableRow>
             </TableHeader>
             <TableBody>
-              {contacts.slice(page * pageSize, (page + 1) * pageSize).map((contact) => {
+              {contacts.slice(page * pageSize, (page + 1) * pageSize).map((contact, index) => {
                 const fullName = `${contact.firstName} ${contact.lastName}`;
                 const initials = `${contact.firstName?.[0] ?? ""}${contact.lastName?.[0] ?? ""}`.toUpperCase();
                 const estimatedValue = contact.estimatedValue;
@@ -226,6 +226,7 @@ export function ContactsDataTable({ statusFilter, sourceFilter, searchQuery }: C
                 return (
                   <TableRow
                     key={contact._id}
+                    data-demo={index === 0 ? "primary-contact-row" : undefined}
                     className={`cursor-pointer group ${isSelected ? "bg-primary/5" : ""} ${isDupe ? "ring-1 ring-inset ring-amber-400/30" : ""}`}
                     onClick={() =>
                       router.push(

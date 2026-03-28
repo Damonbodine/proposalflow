@@ -21,6 +21,7 @@ type DemoStep = {
   whyItMatters: string;
   routePrefix: string;
   target?: string;
+  actionTarget?: string;
   actionLabel?: string;
 };
 
@@ -90,6 +91,7 @@ const PROPOSALFLOW_SCENARIO: DemoScenario = {
         "This is where a team decides whether to schedule a meeting, draft a proposal, or update the opportunity status.",
       routePrefix: "/contacts/",
       target: "[data-demo='contact-detail-view']",
+      actionTarget: "[data-demo='primary-contact-row']",
     },
     {
       id: "proposals-table",
@@ -111,6 +113,7 @@ const PROPOSALFLOW_SCENARIO: DemoScenario = {
         "This is the proof point that the app supports real proposal operations rather than isolated documents.",
       routePrefix: "/proposals/",
       target: "[data-demo='proposal-detail-view']",
+      actionTarget: "[data-demo='primary-proposal-row']",
     },
   ],
 };
@@ -210,6 +213,14 @@ export function DemoMode() {
 
   function nextStep() {
     if (!onExpectedRoute) {
+      const actionElement = activeStep.actionTarget
+        ? document.querySelector<HTMLElement>(activeStep.actionTarget)
+        : null;
+      if (actionElement) {
+        actionElement.click();
+        return;
+      }
+
       const params = new URLSearchParams(searchParams.toString());
       params.set("demo", activeScenario.id);
       params.set("step", String(stepIndex + 1));
@@ -220,9 +231,12 @@ export function DemoMode() {
       return;
     }
 
-    if (!isLastStep) {
-      setStepIndex((prev) => prev + 1);
+    if (isLastStep) {
+      exitDemo();
+      return;
     }
+
+    setStepIndex((prev) => prev + 1);
   }
 
   function previousStep() {
