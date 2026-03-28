@@ -4,7 +4,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -21,6 +21,7 @@ import { MoreHorizontal, Plus, Eye, Pencil, Trash2, Send, FileText, CalendarCloc
 import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
 import { TableSkeleton } from "@/components/table-skeleton";
+import { withPreservedDemoQuery } from "@/lib/demo";
 
 const statusStyles: Record<string, string> = {
   Draft: "bg-gray-500/10 text-gray-600 dark:text-gray-400",
@@ -78,12 +79,13 @@ export function ProposalsDataTable({ statusFilter }: ProposalsDataTableProps) {
   const deleteProposal = useMutation(api.proposals.remove);
   const sendProposal = useMutation(api.proposals.send);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [deleteId, setDeleteId] = useState<Id<"proposals"> | null>(null);
 
   if (proposals === undefined) return <TableSkeleton rows={5} cols={7} />;
   if (proposals.length === 0)
     return (
-      <Card>
+      <Card data-demo="proposals-table">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
             <FileText className="h-6 w-6 text-muted-foreground" />
@@ -131,7 +133,11 @@ export function ProposalsDataTable({ statusFilter }: ProposalsDataTableProps) {
                   <TableRow
                     key={proposal._id}
                     className="cursor-pointer group"
-                    onClick={() => router.push(`/proposals/${proposal._id}`)}
+                    onClick={() =>
+                      router.push(
+                        withPreservedDemoQuery(`/proposals/${proposal._id}`, searchParams),
+                      )
+                    }
                   >
                     <TableCell className="font-medium group-hover:text-primary transition-colors">
                       {proposal.title}
@@ -185,10 +191,10 @@ export function ProposalsDataTable({ statusFilter }: ProposalsDataTableProps) {
                           <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(`/proposals/${proposal._id}`); }}>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(withPreservedDemoQuery(`/proposals/${proposal._id}`, searchParams)); }}>
                             <Eye className="mr-2 h-4 w-4" /> View
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(`/proposals/${proposal._id}/edit`); }}>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(withPreservedDemoQuery(`/proposals/${proposal._id}/edit`, searchParams)); }}>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                           </DropdownMenuItem>
                           {proposal.status === "Draft" && (

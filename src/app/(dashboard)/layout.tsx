@@ -5,6 +5,7 @@ import { useConvexAuth, useQuery, useMutation } from "convex/react";
 import { useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { api } from "@convex/_generated/api";
+import { DemoMode } from "@/components/demo-mode";
 import { NavSidebar } from "@/components/nav-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -77,6 +78,7 @@ export default function DashboardLayout({
               {children}
             </ErrorBoundary>
           </div>
+          <DemoMode />
         </main>
       </div>
     </SidebarProvider>

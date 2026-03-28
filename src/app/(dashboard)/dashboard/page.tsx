@@ -6,6 +6,7 @@ import { api } from "@convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DemoModeStartButton } from "@/components/demo-mode";
 import Link from "next/link";
 import {
   Users, FileText, DollarSign, Calendar, TrendingUp,
@@ -73,7 +74,7 @@ export default function DashboardPage() {
   const maxPipeline = Math.max(...(pipeline ?? []).map((p: any) => p.count), 1);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-demo="dashboard-overview">
       {/* Header */}
       <div className="flex items-end justify-between">
         <div>
@@ -83,6 +84,7 @@ export default function DashboardPage() {
           <p className="text-muted-foreground mt-1">Your sales pipeline at a glance</p>
         </div>
         <div className="flex gap-2">
+          <DemoModeStartButton />
           <Link href="/contacts/new">
             <Button variant="outline" size="sm" className="gap-1.5">
               <UserPlus className="h-4 w-4" /> New Contact
@@ -97,7 +99,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4" data-demo="dashboard-stats">
         {statCards.map((card, i) => (
           <Card
             key={card.label}
@@ -128,7 +130,7 @@ export default function DashboardPage() {
       {/* Pipeline + Activity */}
       <div className="grid gap-6 lg:grid-cols-5">
         {/* Pipeline Funnel */}
-        <Card className="lg:col-span-3 border-0 shadow-sm">
+        <Card className="lg:col-span-3 border-0 shadow-sm" data-demo="dashboard-pipeline">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">

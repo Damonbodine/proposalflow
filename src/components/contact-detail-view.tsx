@@ -64,7 +64,7 @@ export function ContactDetailView({ contactId }: ContactDetailViewProps) {
   const initials = `${contact.firstName?.[0] ?? ""}${contact.lastName?.[0] ?? ""}`.toUpperCase();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-demo="contact-detail-view">
       {/* Header Card */}
       <Card>
         <CardContent className="pt-6">

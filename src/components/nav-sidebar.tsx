@@ -2,7 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Sidebar,
@@ -29,6 +29,7 @@ import {
 import { useClerk } from "@clerk/nextjs";
 import { ContactQuickAdd } from "@/components/contact-quick-add";
 import { GlobalSearch } from "@/components/global-search";
+import { withPreservedDemoQuery } from "@/lib/demo";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -46,6 +47,7 @@ export function NavSidebar() {
   const currentUser = useQuery(api.users.getCurrentUser);
   const unreadCount = useQuery(api.notifications.getUnreadCount);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { signOut } = useClerk();
 
   const filteredItems = navItems.filter((item) => {
@@ -82,7 +84,7 @@ export function NavSidebar() {
             return (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
-                  render={<Link href={item.href} />}
+                  render={<Link href={withPreservedDemoQuery(item.href, searchParams)} />}
                   isActive={isActive}
                   className={
                     isActive

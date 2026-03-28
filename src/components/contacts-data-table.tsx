@@ -4,7 +4,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -36,6 +36,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { formatCurrency, getAvatarColor } from "@/lib/format";
+import { withPreservedDemoQuery } from "@/lib/demo";
 
 const statusStyles: Record<string, string> = {
   New: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
@@ -63,6 +64,7 @@ export function ContactsDataTable({ statusFilter, sourceFilter, searchQuery }: C
   const deleteContact = useMutation(api.contacts.remove);
   const updateContact = useMutation(api.contacts.update);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [deleteId, setDeleteId] = useState<Id<"contacts"> | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<Id<"contacts">>>(new Set());
   const [bulkStatusOpen, setBulkStatusOpen] = useState(false);
@@ -102,7 +104,7 @@ export function ContactsDataTable({ statusFilter, sourceFilter, searchQuery }: C
   if (contacts === undefined) return <TableSkeleton rows={5} cols={7} />;
   if (contacts.length === 0)
     return (
-      <Card>
+      <Card data-demo="contacts-table">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
             <Users className="h-6 w-6 text-muted-foreground" />
@@ -225,7 +227,11 @@ export function ContactsDataTable({ statusFilter, sourceFilter, searchQuery }: C
                   <TableRow
                     key={contact._id}
                     className={`cursor-pointer group ${isSelected ? "bg-primary/5" : ""} ${isDupe ? "ring-1 ring-inset ring-amber-400/30" : ""}`}
-                    onClick={() => router.push(`/contacts/${contact._id}`)}
+                    onClick={() =>
+                      router.push(
+                        withPreservedDemoQuery(`/contacts/${contact._id}`, searchParams),
+                      )
+                    }
                   >
                     <TableCell>
                       <input
@@ -272,10 +278,10 @@ export function ContactsDataTable({ statusFilter, sourceFilter, searchQuery }: C
                           <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(`/contacts/${contact._id}`); }}>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(withPreservedDemoQuery(`/contacts/${contact._id}`, searchParams)); }}>
                             <Eye className="mr-2 h-4 w-4" /> View
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(`/contacts/${contact._id}/edit`); }}>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); router.push(withPreservedDemoQuery(`/contacts/${contact._id}/edit`, searchParams)); }}>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem
